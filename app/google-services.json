@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "123024197585",
+    "project_id": "spacex-fan-c5350",
+    "storage_bucket": "spacex-fan-c5350.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:123024197585:android:6ccff6b3e5406d2a1042f0",
+        "android_client_info": {
+          "package_name": "com.axuca.spacexfan"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "123024197585-jl98upq8vrlj46ne1k45attvqhdj1e11.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.axuca.spacexfan",
+            "certificate_hash": "2b4ed2e19f893363e26396033145b95883efa81f"
+          }
+        },
+        {
+          "client_id": "123024197585-hjs3g8io7i8bj5gnao82kis4s3t67ag3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBjPPwsNVktPMiVP6mPzE8VGqikiiAm5rc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "123024197585-hjs3g8io7i8bj5gnao82kis4s3t67ag3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

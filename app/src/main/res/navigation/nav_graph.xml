@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/rocketsFragment">
+
+    <navigation
+        android:id="@+id/loginGraph"
+        app:startDestination="@id/signInFragment">
+        <fragment
+            android:id="@+id/signInFragment"
+            android:name="com.axuca.spacexfan.view.login.SignInFragment"
+            android:label="fragment_sign_in"
+            tools:layout="@layout/fragment_sign_in">
+            <action
+                android:id="@+id/action_signInFragment_to_signUpFragment"
+                app:destination="@id/signUpFragment"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right" />
+            <action
+                android:id="@+id/action_signInFragment_to_forgotPasswordFragment"
+                app:destination="@id/forgotPasswordFragment"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right" />
+        </fragment>
+        <fragment
+            android:id="@+id/signUpFragment"
+            android:name="com.axuca.spacexfan.view.login.SignUpFragment"
+            android:label="fragment_sign_up"
+            tools:layout="@layout/fragment_sign_up" />
+        <fragment
+            android:id="@+id/forgotPasswordFragment"
+            android:name="com.axuca.spacexfan.view.login.ForgotPasswordFragment"
+            android:label="ForgotPasswordFragment" />
+        <action
+            android:id="@+id/action_global_signInFragment"
+            app:destination="@id/signInFragment"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_out_right"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/signInFragment" />
+    </navigation>
+    <fragment
+        android:id="@+id/rocketsFragment"
+        android:name="com.axuca.spacexfan.view.bottom_navigation.RocketsFragment"
+        android:label="Rockets"
+        tools:layout="@layout/fragment_rockets">
+        <action
+            android:id="@+id/action_rocketsFragment_to_rocketDetailFragment"
+            app:destination="@id/rocketDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:launchSingleTop="true"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_rocketsFragment"
+        app:destination="@id/rocketsFragment"
+        app:launchSingleTop="true"
+        app:popUpTo="@id/loginGraph"
+        app:popUpToInclusive="true" />
+
+    <fragment
+        android:id="@+id/favoritesFragment"
+        android:name="com.axuca.spacexfan.view.bottom_navigation.FavoritesFragment"
+        android:label="Favorites"
+        tools:layout="@layout/fragment_favorites">
+        <action
+            android:id="@+id/action_favoritesFragment_to_rocketDetailFragment"
+            app:destination="@id/rocketDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:launchSingleTop="true"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/upcomingFragment"
+        android:name="com.axuca.spacexfan.view.bottom_navigation.UpcomingFragment"
+        android:label="Upcoming Launches"
+        tools:layout="@layout/fragment_upcoming">
+        <action
+            android:id="@+id/action_upcomingFragment_to_upcomingDetailFragment"
+            app:destination="@id/upcomingDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/upcomingDetailFragment"
+        android:name="com.axuca.spacexfan.view.bottom_navigation.UpcomingDetailFragment"
+        android:label="Launch Detail">
+        <argument
+            android:name="upcomingLaunch"
+            app:argType="com.axuca.spacexfan.model.UpcomingLaunch" />
+    </fragment>
+    <fragment
+        android:id="@+id/rocketDetailFragment"
+        android:name="com.axuca.spacexfan.view.bottom_navigation.RocketDetailFragment"
+        android:label="Rocket Detail"
+        tools:layout="@layout/fragment_rocket_detail">
+        <argument
+            android:name="rocketInfo"
+            app:argType="com.axuca.spacexfan.model.RocketInfo" />
+    </fragment>
+</navigation>

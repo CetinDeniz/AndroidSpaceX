@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="small">8dp</dimen>
+    <dimen name="mid">12dp</dimen>
+    <dimen name="medium">16dp</dimen>
+    <dimen name="large">24dp</dimen>
+    <dimen name="xlarge">32dp</dimen>
+    <dimen name="xxlarge">64dp</dimen>
+    <dimen name="xxxlarge">128dp</dimen>
+
+    <dimen name="sign_in_logo_top">128dp</dimen>
+    <dimen name="sign_in_logo_start">52dp</dimen>
+    <dimen name="sign_in_logo_end">23dp</dimen>
+    <dimen name="upcoming_list_image">96dp</dimen>
+</resources>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="rocketInfo"
+            type="com.axuca.spacexfan.model.RocketInfo" />
+
+        <variable
+            name="clickListener"
+            type="com.axuca.spacexfan.adapter.RocketClickListener" />
+
+        <variable
+            name="favoriteClickListener"
+            type="com.axuca.spacexfan.adapter.FavoriteClickListener" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:background="@null"
+        android:onClick="@{() -> clickListener.onClick(rocketInfo.rocket.id)}"
+        app:cardBackgroundColor="@android:color/transparent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/rocket_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/medium"
+                android:textColor="@color/white"
+                android:text="@{rocketInfo.rocket.name}"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Rocket" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/image_card"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/medium"
+                android:layout_marginBottom="@dimen/medium"
+                app:cardCornerRadius="@dimen/mid"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/rocket_name">
+
+                <ImageView
+                    android:id="@+id/rocket_image"
+                    android:layout_width="210dp"
+                    android:layout_height="160dp"
+                    android:scaleType="centerCrop"
+                    android:contentDescription="@string/rocket_image"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:loadRocketImage="@{rocketInfo.rocket.flickrImages}"
+                    tools:src="@drawable/rocket_background" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <ImageView
+                android:id="@+id/add_to_favorite"
+                android:layout_width="@dimen/xlarge"
+                android:layout_height="@dimen/xlarge"
+                android:layout_marginEnd="@dimen/medium"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:contentDescription="@string/favorite_button"
+                app:buttonState="@{rocketInfo.status}"
+                android:onClick="@{() -> favoriteClickListener.onClick(rocketInfo)}"
+                android:src="@drawable/favorites_bar"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/rocket_name" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+</layout>
