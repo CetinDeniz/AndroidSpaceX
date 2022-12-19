@@ -33,4 +33,17 @@
     <string name="upcoming_launch_image">Upcoming Launch Image</string>
     <string name="image_from_rocket">Image from Rocket</string>
     <string name="rocket_image">Rocket Image</string>
+
+    <string name="empty_email">Email cannot be empty</string>
+    <string name="empty_password">Password cannot be empty</string>
+    <string name="password_not_match">Passwords are not the same</string>
+
+    <string name="signin_accepted">User logged in successfully</string>
+    <string name="signin_denied">Your password or e-mail address is wrong</string>
+    <string name="register_successful">User registered successfully</string>
+    <string name="register_error">Registration error</string>
+    <string name="email_bad_pattern">Email does not match pattern.</string>
+    <string name="empty_name_surname"><![CDATA[Name & Surname cannot be empty]]></string>
+    <string name="check_email">Check your email to reset your password!</string>
+    <string name="forgot_password_error">Try again! Something wrong happened!</string>
 </resources>

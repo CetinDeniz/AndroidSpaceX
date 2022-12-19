@@ -36,7 +36,6 @@ class RocketsVM @Inject constructor(
 
     private val postListener = object : ValueEventListener {
         override fun onDataChange(dataSnapshot: DataSnapshot) {
-
             /** Favorites in Firebase*/
             val rocketList: MutableList<Rocket> = ArrayList()
             for (ds in dataSnapshot.children) {
@@ -98,7 +97,15 @@ class RocketsVM @Inject constructor(
         }!!
     }
 
-    fun deleteFromFavorites(rocket: Rocket) {
+    fun favoriteClick(rocketInfo: RocketInfo){
+        if (rocketInfo.status) {
+            deleteFromFavorites(rocketInfo.rocket)
+        } else {
+            addToFavorites(rocketInfo.rocket)
+        }
+    }
+
+    private fun deleteFromFavorites(rocket: Rocket) {
         databaseReference
             .child(getUserUID())
             .child("favorites")
@@ -115,7 +122,22 @@ class RocketsVM @Inject constructor(
             }
     }
 
+    private fun addToFavorites(rocket: Rocket) {
+        databaseReference
+            .child(mAuth.currentUser!!.uid)
+            .child("favorites")
+            .push()
+            .setValue(rocket)
+    }
+
+    /** Gives null pointer exception when "sign in with google for the first time" */
     private fun getUserUID(): String {
+        Log.e("RocketsVM - Auth", mAuth.currentUser.toString())
+        Log.e("RocketsVM - Auth UID", mAuth.currentUser?.uid.toString())
+
+        Log.e("RocketsVM - Google", googleAccount.toString())
+        Log.e("RocketsVM - Google UID", googleAccount?.id.toString())
+
         return if (mAuth.currentUser?.uid == null) googleAccount!!.id!! else mAuth.currentUser!!.uid
     }
 }

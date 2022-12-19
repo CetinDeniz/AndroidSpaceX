@@ -12,11 +12,7 @@ import com.axuca.spacexfan.adapter.RocketAdapter
 import com.axuca.spacexfan.adapter.RocketClickListener
 import com.axuca.spacexfan.databinding.FragmentFavoritesBinding
 import com.axuca.spacexfan.view_model.FavoritesVM
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class FavoritesFragment : Fragment() {
@@ -24,18 +20,11 @@ class FavoritesFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel by viewModels<FavoritesVM>()
-    private lateinit var mFirebaseDatabase: DatabaseReference
-
-    @Inject
-    lateinit var mAuth: FirebaseAuth
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        mFirebaseDatabase = FirebaseDatabase
-            .getInstance("https://spacex-fan-c5350-default-rtdb.europe-west1.firebasedatabase.app/")
-            .getReference("users")
         _binding = FragmentFavoritesBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -52,22 +41,12 @@ class FavoritesFragment : Fragment() {
         }
 
         val favoriteClickListener = FavoriteClickListener { rocketInfo ->
-            // add this rocket to users firebase db
-            if (rocketInfo.status) {
-                // Remove
-                viewModel.deleteFromFavorites(rocketInfo.rocket)
-            } else {
-                mFirebaseDatabase
-                    .child(mAuth.currentUser!!.uid)
-                    .child("favorites")
-                    .push()
-                    .setValue(rocketInfo.rocket)
-            }
+            viewModel.favoriteClick(rocketInfo)
         }
 
         binding.apply {
             viewModel = this@FavoritesFragment.viewModel
-            lifecycleOwner = this@FavoritesFragment // or viewLifecycleOwner
+            lifecycleOwner = this@FavoritesFragment
             favoritesRecycler.adapter = RocketAdapter(clickListener, favoriteClickListener)
         }
     }

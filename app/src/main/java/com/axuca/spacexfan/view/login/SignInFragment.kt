@@ -7,6 +7,7 @@ import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -15,15 +16,18 @@ import androidx.navigation.fragment.findNavController
 import com.axuca.spacexfan.R
 import com.axuca.spacexfan.databinding.FragmentSignInBinding
 import com.axuca.spacexfan.model.User
+import com.axuca.spacexfan.util.showSnackBar
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-
 
 @AndroidEntryPoint
 class SignInFragment : Fragment() {
@@ -36,7 +40,10 @@ class SignInFragment : Fragment() {
     @Inject
     lateinit var mAuth: FirebaseAuth
 
-    //    @Inject
+    @Inject
+    lateinit var googleSignInAccount: GoogleSignInAccount
+
+    @Inject
     lateinit var mFirebaseDatabase: DatabaseReference
 
     override fun onCreateView(
@@ -44,39 +51,9 @@ class SignInFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         (activity as AppCompatActivity).supportActionBar?.hide()
-
-        mFirebaseDatabase = FirebaseDatabase
-            .getInstance("https://spacex-fan-c5350-default-rtdb.europe-west1.firebasedatabase.app/")
-            .getReference("users")
-
         startActivityForResult =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-                if (it.resultCode == Activity.RESULT_OK) {
-                    val task = GoogleSignIn.getSignedInAccountFromIntent(it.data)
-                    val googleAccount = task.getResult(ApiException::class.java)
-
-                    mFirebaseDatabase.orderByKey().equalTo(googleAccount.id!!)
-                        .addListenerForSingleValueEvent(object : ValueEventListener {
-                            override fun onDataChange(snapshot: DataSnapshot) {
-                                if (!snapshot.exists()) {
-                                    googleAccount?.let { acc ->
-                                        val user = User(acc.email ?: "Null email", listOf())
-                                        mFirebaseDatabase.child(acc.id!!)
-                                            .setValue(user)
-                                            .addOnCompleteListener { task ->
-                                                if (task.isSuccessful) {
-                                                    findNavController().navigate(R.id.action_global_rocketsFragment)
-                                                }
-                                            }
-                                    }
-                                } else {
-                                    findNavController().navigate(R.id.action_global_rocketsFragment)
-                                }
-                            }
-
-                            override fun onCancelled(error: DatabaseError) {}
-                        })
-                }
+                googleSignInActivityResult(it)
             }
 
         _binding = FragmentSignInBinding.inflate(inflater, container, false)
@@ -88,54 +65,44 @@ class SignInFragment : Fragment() {
 
         binding.apply {
             loginCard.setOnClickListener {
-                login()
+                signIn()
             }
-
             googleSignCard.setOnClickListener {
                 signInWithGoogle()
             }
-
             forgotPassword.setOnClickListener {
                 findNavController().navigate(SignInFragmentDirections.actionSignInFragmentToForgotPasswordFragment())
             }
-
             signUp.setOnClickListener {
                 findNavController().navigate(SignInFragmentDirections.actionSignInFragmentToSignUpFragment())
             }
         }
     }
 
+    /** For Sign-in with Email-Password */
+    private fun signIn() {
+        binding.apply {
+            val email = emailEditText.text.toString()
+            val password = passwordEditText.text.toString()
 
-    private fun login() {
-        val email = binding.emailEditText.text.toString()
-        val password = binding.passwordEditText.text.toString()
-
-        if (TextUtils.isEmpty(email)) {
-            binding.email.error = "Email cannot be empty"
-        } else if (TextUtils.isEmpty(password)) {
-            binding.password.error = "Password cannot be empty"
-        } else {
-            signInWithEmailAndPassword(email, password)
+            if (TextUtils.isEmpty(email)) {
+                emailInputLayout.error = "Email cannot be empty"
+            } else if (TextUtils.isEmpty(password)) {
+                passwordInputLayout.error = "Password cannot be empty"
+            } else {
+                signInWithEmailAndPassword(email, password)
+            }
         }
     }
 
-    /** For Sign-in with Email-Password */
     private fun signInWithEmailAndPassword(email: String, password: String) {
         mAuth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(requireActivity()) {
                 if (it.isSuccessful) {
-                    Snackbar.make(
-                        binding.root,
-                        "User logged in successfully",
-                        Snackbar.LENGTH_SHORT
-                    ).show()
+                    showSnackBar(binding.root, getString(R.string.signin_accepted))
                     findNavController().navigate(R.id.action_global_rocketsFragment)
                 } else {
-                    Snackbar.make(
-                        binding.root,
-                        "Your password or e-mail address is wrong.", // Log in error ${it.exception?.message ?: "Null exception"}
-                        Snackbar.LENGTH_SHORT
-                    ).show()
+                    showSnackBar(binding.root, getString(R.string.signin_denied))
                 }
             }
     }
@@ -154,6 +121,36 @@ class SignInFragment : Fragment() {
         val mGoogleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
 
         return mGoogleSignInClient.signInIntent
+    }
+
+    private fun googleSignInActivityResult(activityResult: ActivityResult) {
+        if (activityResult.resultCode == Activity.RESULT_OK) {
+            val googleAccount = GoogleSignIn
+                .getSignedInAccountFromIntent(activityResult.data)
+                .getResult(ApiException::class.java)
+
+            mFirebaseDatabase.orderByKey().equalTo(googleAccount.id!!)
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        if (!snapshot.exists()) {
+                            googleAccount?.let { acc ->
+                                val user = User(acc.email ?: "Null email", listOf())
+                                mFirebaseDatabase.child(acc.id!!)
+                                    .setValue(user)
+                                    .addOnCompleteListener { task ->
+                                        if (task.isSuccessful) {
+                                            findNavController().navigate(R.id.action_global_rocketsFragment)
+                                        }
+                                    }
+                            }
+                        } else {
+                            findNavController().navigate(R.id.action_global_rocketsFragment)
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {}
+                })
+        }
     }
 
     override fun onDestroyView() {

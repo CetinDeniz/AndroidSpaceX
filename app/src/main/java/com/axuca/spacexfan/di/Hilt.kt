@@ -7,7 +7,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -36,6 +37,7 @@ object GoogleSignInModule {
         return GoogleSignIn.getLastSignedInAccount(appContext)
     }
 }
+
 @InstallIn(SingletonComponent::class)
 @Module
 object SpaceXApiServiceModule {
@@ -54,8 +56,8 @@ object FirebaseRealtimeDatabaseModule {
     @Singleton
     @Provides
     fun provideFirebaseRealtimeDatabase(): DatabaseReference {
-        return FirebaseDatabase
-            .getInstance("https://spacex-fan-c5350-default-rtdb.europe-west1.firebasedatabase.app/")
+        return Firebase
+            .database("https://spacex-fan-c5350-default-rtdb.europe-west1.firebasedatabase.app/")
             .getReference("users")
     }
 }

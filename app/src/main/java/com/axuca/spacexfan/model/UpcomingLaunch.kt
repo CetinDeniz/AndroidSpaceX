@@ -4,6 +4,9 @@ import android.os.Parcelable
 import com.squareup.moshi.Json
 import kotlinx.parcelize.Parcelize
 
+/**
+ * Class for -> SpaceX API - Upcoming Launches result
+ */
 @Parcelize
 data class UpcomingLaunch(
     @Json(name = "links") var links: Links,

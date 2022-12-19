@@ -3,40 +3,35 @@ package com.axuca.spacexfan.view.login
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Patterns
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.axuca.spacexfan.R
 import com.axuca.spacexfan.databinding.FragmentSignUpBinding
 import com.axuca.spacexfan.model.User
-import com.google.android.material.snackbar.Snackbar
+import com.axuca.spacexfan.util.showSnackBar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class SignUpFragment : Fragment() {
 
-    @Inject
-    lateinit var mAuth: FirebaseAuth
-
-    //    @Inject
-    private lateinit var mFirebaseDatabase: DatabaseReference
-
     private var _binding: FragmentSignUpBinding? = null
     private val binding get() = _binding!!
+
+    @Inject
+    lateinit var mAuth: FirebaseAuth
+    @Inject
+    lateinit var mFirebaseDatabase: DatabaseReference
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        mFirebaseDatabase = FirebaseDatabase
-            .getInstance("https://spacex-fan-c5350-default-rtdb.europe-west1.firebasedatabase.app/")
-            .getReference("users")
         _binding = FragmentSignUpBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -50,13 +45,13 @@ class SignUpFragment : Fragment() {
             }
 
             registerButton.setOnClickListener {
-                registerUser(it)
+                registerUser()
             }
         }
 
     }
 
-    private fun FragmentSignUpBinding.registerUser(view: View) {
+    private fun FragmentSignUpBinding.registerUser() {
         val emailView = emailEditText
         val passwordView = passwordEditText
         val passwordAgainView = passwordAgainEditText
@@ -67,26 +62,26 @@ class SignUpFragment : Fragment() {
         val passwordAgain = passwordAgainView.text.toString()
 
         if (TextUtils.isEmpty(nameSurName)) {
-            nameSurnameLayout.error = "Name & Surname cannot be empty"
+            nameSurnameLayout.error = getString(R.string.empty_name_surname)
             nameSurnameLayout.requestFocus()
         }
 
         if (TextUtils.isEmpty(email)) {
-            emailView.error = "Email cannot be empty"
+            emailView.error = getString(R.string.empty_email)
             emailView.requestFocus()
         } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            emailView.error = "Email does not match pattern."
+            emailView.error = getString(R.string.email_bad_pattern)
             emailView.requestFocus()
         }
 
         if (TextUtils.isEmpty(password)) {
-            passwordView.error = "Password cannot be empty"
+            passwordView.error = getString(R.string.empty_password)
             passwordView.requestFocus()
         } else if (TextUtils.isEmpty(passwordAgain)) {
-            passwordView.error = "Password cannot be empty"
+            passwordView.error = getString(R.string.empty_password)
             passwordView.requestFocus()
         } else if (password != passwordAgain) {
-            passwordAgainView.error = "Passwords are not the same"
+            passwordAgainView.error = getString(R.string.password_not_match)
             passwordAgainView.requestFocus()
         } else {
             mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener {
@@ -97,27 +92,13 @@ class SignUpFragment : Fragment() {
                         .setValue(user)
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
-                                Snackbar.make(
-                                    view,
-                                    "User registered successfully",
-                                    Snackbar.LENGTH_SHORT
-                                ).show()
+                                showSnackBar(this.root, getString(R.string.register_successful))
                                 mAuth.signOut()
                                 findNavController().navigate(R.id.action_global_signInFragment)
-                            } else {
-                                Snackbar.make(
-                                    view,
-                                    "Registration error ${it.exception?.message ?: "Null exception"}",
-                                    Snackbar.LENGTH_SHORT
-                                ).show()
                             }
                         }
                 } else {
-                    Snackbar.make(
-                        view,
-                        "Registration error ${it.exception?.message ?: "Null exception"}",
-                        Snackbar.LENGTH_SHORT
-                    ).show()
+                    showSnackBar(this.root, getString(R.string.register_error))
                 }
             }
         }

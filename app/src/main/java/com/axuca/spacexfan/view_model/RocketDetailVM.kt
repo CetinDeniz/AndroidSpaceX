@@ -22,7 +22,16 @@ class RocketDetailVM @Inject constructor(
     val rocketInfo: LiveData<RocketInfo>
         get() = _rocketInfo
 
-    fun deleteFromFavorites(rocket: Rocket) {
+    fun favoriteClick(rocketInfo: RocketInfo){
+        if (rocketInfo.status) {
+            deleteFromFavorites(rocketInfo.rocket)
+        } else {
+            addToFavorites(rocketInfo.rocket)
+        }
+        changeRocketInfoState()
+    }
+
+    private fun deleteFromFavorites(rocket: Rocket) {
         databaseReference
             .child(getUserUID())
             .child("favorites")
@@ -39,6 +48,14 @@ class RocketDetailVM @Inject constructor(
             }
     }
 
+    private fun addToFavorites(rocket: Rocket) {
+        databaseReference
+            .child(mAuth.currentUser!!.uid)
+            .child("favorites")
+            .push()
+            .setValue(rocket)
+    }
+
     private fun getUserUID(): String {
         return if (mAuth.currentUser?.uid == null) googleAccount!!.id!! else mAuth.currentUser!!.uid
     }
@@ -47,7 +64,7 @@ class RocketDetailVM @Inject constructor(
         _rocketInfo.value = rocketInfo
     }
 
-    fun changeRocketInfoState() {
+    private fun changeRocketInfoState() {
         _rocketInfo.value!!.let {
             val r = it.copy(status = !it.status)
             _rocketInfo.value = r

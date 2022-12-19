@@ -39,7 +39,7 @@ class UpcomingFragment : Fragment() {
 
         binding.apply {
             this.viewModel = this@UpcomingFragment.viewModel
-            lifecycleOwner = this@UpcomingFragment // or viewLifecycleOwner
+            lifecycleOwner = this@UpcomingFragment
             upcomingRecycler.adapter = UpcomingAdapter(clickListener)
         }
     }

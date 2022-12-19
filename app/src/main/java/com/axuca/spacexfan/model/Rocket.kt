@@ -5,6 +5,9 @@ import com.google.firebase.database.PropertyName
 import com.squareup.moshi.Json
 import kotlinx.parcelize.Parcelize
 
+/**
+ *
+ */
 @Parcelize
 data class Rocket(
     @PropertyName("id") @Json(name = "id") var id: String = "",

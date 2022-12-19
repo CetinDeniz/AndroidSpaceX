@@ -13,11 +13,7 @@ import com.axuca.spacexfan.adapter.RocketAdapter
 import com.axuca.spacexfan.adapter.RocketClickListener
 import com.axuca.spacexfan.databinding.FragmentRocketsBinding
 import com.axuca.spacexfan.view_model.RocketsVM
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class RocketsFragment : Fragment() {
@@ -26,21 +22,11 @@ class RocketsFragment : Fragment() {
 
     private val viewModel by viewModels<RocketsVM>()
 
-    @Inject
-    lateinit var mAuth: FirebaseAuth
-
-    //    @Inject
-    private lateinit var mFirebaseDatabase: DatabaseReference
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         (activity as AppCompatActivity).supportActionBar?.show()
-
-        mFirebaseDatabase = FirebaseDatabase
-            .getInstance("https://spacex-fan-c5350-default-rtdb.europe-west1.firebasedatabase.app/")
-            .getReference("users")
         _binding = FragmentRocketsBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -57,20 +43,7 @@ class RocketsFragment : Fragment() {
         }
 
         val favoriteClickListener = FavoriteClickListener { rocketInfo ->
-
-            if (rocketInfo.status) {
-                // Remove
-                viewModel.deleteFromFavorites(rocketInfo.rocket)
-            } else {
-                mFirebaseDatabase
-                    .child(mAuth.currentUser!!.uid)
-                    .child("favorites")
-                    .push()
-                    .setValue(rocketInfo.rocket)
-            }
-
-            // find rocketInfo in VM and change state
-            // viewModel.changeRocketInfoStatus(rocketInfo)
+            viewModel.favoriteClick(rocketInfo)
         }
 
         binding.apply {

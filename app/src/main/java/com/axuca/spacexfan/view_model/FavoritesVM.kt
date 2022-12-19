@@ -58,7 +58,15 @@ class FavoritesVM @Inject constructor(
         }!!
     }
 
-    fun deleteFromFavorites(rocket: Rocket) {
+    fun favoriteClick(rocketInfo: RocketInfo){
+        if (rocketInfo.status) {
+            deleteFromFavorites(rocketInfo.rocket)
+        } else {
+            addToFavorites(rocketInfo.rocket)
+        }
+    }
+
+    private fun deleteFromFavorites(rocket: Rocket) {
         databaseReference
             .child(getUserUID())
             .child("favorites")
@@ -73,6 +81,14 @@ class FavoritesVM @Inject constructor(
                     }
                 }
             }
+    }
+
+    private fun addToFavorites(rocket: Rocket) {
+        databaseReference
+            .child(mAuth.currentUser!!.uid)
+            .child("favorites")
+            .push()
+            .setValue(rocket)
     }
 
     private fun getUserUID(): String {
